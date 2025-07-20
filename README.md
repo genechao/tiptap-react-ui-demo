@@ -2,6 +2,8 @@
 
 This is a simple demo of a [Tiptap](https://tiptap.dev) (v3) Rich Text Editor with custom toolbar in React (v19) and Tailwind CSS (v4). It uses Vite for the development environment.
 
+Live Demo: [https://genechao.github.io/tiptap-react-ui-demo/](https://genechao.github.io/tiptap-react-ui-demo/)
+
 ## Getting Started
 
 1.  Install the dependencies:
