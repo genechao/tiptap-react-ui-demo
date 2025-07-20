@@ -1,0 +1,66 @@
+/* 
+      This file defines custom theme colors for the Rich Text Editor UI.
+      It should be imported into the main CSS file using the `@import` directive:
+      globals.css (Next.js): @import "../components/rte/theme.css";
+      index.css (Vite): @import "./components/rte/theme.css";
+    */
+
+@layer base {
+  :root {
+    --color-rte-ui-background: var(--color-gray-100);
+    --color-rte-ui-foreground: var(--color-gray-950);
+
+    --color-rte-ui-muted: var(--color-gray-100);
+    --color-rte-ui-muted-foreground: var(--color-gray-500);
+
+    --color-rte-ui-popover: var(--color-white);
+    --color-rte-ui-popover-foreground: var(--color-gray-950);
+
+    --color-rte-ui-border: var(--color-gray-200);
+    --color-rte-ui-input: var(--color-gray-200);
+
+    --color-rte-ui-ring: var(--color-blue-400);
+
+    --color-rte-ui-primary: var(--color-gray-900);
+    --color-rte-ui-primary-foreground: var(--color-gray-50);
+
+    --color-rte-ui-secondary: var(--color-gray-100);
+    --color-rte-ui-secondary-foreground: var(--color-gray-900);
+
+    --color-rte-ui-accent: var(--color-gray-100);
+    --color-rte-ui-accent-foreground: var(--color-gray-900);
+
+    --color-rte-ui-destructive: var(--color-red-600);
+    --color-rte-ui-destructive-foreground: var(--color-gray-50);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-rte-ui-background: var(--color-gray-950);
+      --color-rte-ui-foreground: var(--color-gray-50);
+
+      --color-rte-ui-muted: var(--color-gray-800);
+      --color-rte-ui-muted-foreground: var(--color-gray-400);
+
+      --color-rte-ui-popover: var(--color-gray-950);
+      --color-rte-ui-popover-foreground: var(--color-gray-50);
+
+      --color-rte-ui-border: var(--color-gray-800);
+      --color-rte-ui-input: var(--color-gray-800);
+
+      --color-rte-ui-ring: var(--color-blue-400);
+
+      --color-rte-ui-primary: var(--color-gray-50);
+      --color-rte-ui-primary-foreground: var(--color-gray-900);
+
+      --color-rte-ui-secondary: var(--color-gray-800);
+      --color-rte-ui-secondary-foreground: var(--color-gray-50);
+
+      --color-rte-ui-accent: var(--color-gray-800);
+      --color-rte-ui-accent-foreground: var(--color-gray-50);
+
+      --color-rte-ui-destructive: var(--color-red-500);
+      --color-rte-ui-destructive-foreground: var(--color-gray-950);
+    }
+  }
+}
