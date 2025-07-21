@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react'
 import RichTextEditor from './components/RichTextEditor'
+import { Popover, PopoverContent, PopoverTrigger } from './components/ui/popover'
 
 function App() {
   // State for the rich text editor's HTML content
   const [htmlContent, setHtmlContent] = useState("")
-  
+
   // Memoize `handleRichTextChange` to prevent unnecessary re-renders of `RichTextEditor`.
   // This is crucial if `RichTextEditor` is a memoized component (e.g., using React.memo)
   // as it ensures the `onHtmlChange` prop maintains reference equality across renders,
@@ -12,17 +13,23 @@ function App() {
   const handleRichTextChange = useCallback((newHtml: string) => {
     setHtmlContent(newHtml)
   }, [])
-  
+
   // State for the message after clicking Copy HTML to Clipboard
   const [copied, setCopied] = useState(false)
+  // State to control the popover's open/closed state
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+
   // Copy HTML to Clipboard click handler
   const handleCopyClick = () => {
     // Copy HTML content to clipboard
     navigator.clipboard.writeText(htmlContent)
       .then(() => {
-        setCopied(true)
+        setCopied(true) // Show "Copied!" message
+        setIsPopoverOpen(true) // Open the popover
+
         setTimeout(() => {
-          setCopied(false)
+          setCopied(false) // Hide "Copied!" message
+          setIsPopoverOpen(false) // Close the popover
         }, 2000) // Display for 2 seconds
       })
       .catch(err => alert('Failed to copy: ' + err))
@@ -34,13 +41,19 @@ function App() {
       <RichTextEditor value={htmlContent} onChange={handleRichTextChange} debounceDelay={300} />
 
       <div className="mt-4 flex items-center space-x-2">
-        <button
-          onClick={handleCopyClick}
-          className="rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/90 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-foreground text-background hover:bg-foreground/90 h-10 px-4 py-2"
-        >
-          Copy HTML to Clipboard
-        </button>
-        {copied && <span className="ml-2 text-sm text-green-600">Copied!</span>}
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+          <PopoverTrigger asChild>
+            <button
+              onClick={handleCopyClick}
+              className="rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/90 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-foreground text-background hover:bg-foreground/90 h-10 px-4 py-2"
+            >
+              Copy HTML to Clipboard
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-fit">
+            <div className={`text-sm text-green-600 ${copied ? 'opacity-100' : 'opacity-0'}`}>Copied!</div>
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   )

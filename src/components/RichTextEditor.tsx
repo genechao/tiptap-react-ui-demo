@@ -1,6 +1,6 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import TextAlign from '@tiptap/extension-text-align'
+import TextAlign from '@tiptap/extension-text-align';
 import { RichTextEditorUI } from './rte/RichTextEditorUI';
 import React, { useEffect, useReducer, useMemo } from 'react';
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
@@ -20,7 +20,20 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value: htmlContent, onC
     onTransaction: () => {
       forceUpdate(); // Trigger re-render on any editor transaction
     },
-    extensions: [StarterKit, TextAlign.configure({ types: ['heading', 'paragraph'] })],
+    extensions: [
+      StarterKit.configure({
+        link: {
+          openOnClick: false,
+          autolink: true,
+          defaultProtocol: "https",
+          protocols: ["http", "https"],
+          isAllowedUri: (url, ctx) => {
+            return ctx.defaultValidate(url) && ctx.protocols.some(protocol => url.startsWith(protocol.toString() + '://'));
+          },
+        },
+      }),
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+    ],
     content: htmlContent, // Use HTML directly
     onUpdate: ({ editor }) => {
       debouncedOnHtmlChange(editor.getHTML());
@@ -70,6 +83,17 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value: htmlContent, onC
     return null;
   }
 
+  const handleSetLink = (url: string | null): boolean => {
+    if (editor) {
+      if (url) {
+        return editor.chain().focus().setLink({ href: url }).run();
+      } else {
+        return editor.chain().focus().unsetLink().run();
+      }
+    }
+    return false;
+  };
+
   return (
     <RichTextEditorUI
       onToggleBold={() => editor.chain().focus().toggleBold().run()}
@@ -87,6 +111,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value: htmlContent, onC
       onToggleBlockquote={() => editor.chain().focus().toggleBlockquote().run()}
       isBlockquoteActive={editor.isActive('blockquote')}
       onToggleCodeBlock={() => editor.chain().focus().toggleCodeBlock().run()}
+      onSetLink={handleSetLink}
+      isLinkActive={editor.isActive('link')}
+      currentLink={editor.getAttributes('link').href || null}
+      onAddImage={() => alert("not yet implemented")}
       isCodeBlockActive={editor.isActive('codeBlock')}
       onSetHeading={(level) => editor.chain().focus().toggleHeading({ level }).run()}
       onSetParagraph={() => editor.chain().focus().setParagraph().run()}
@@ -95,11 +123,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value: htmlContent, onC
       onRedo={() => editor.chain().focus().redo().run()}
       canUndo={editor.can().undo()}
       canRedo={editor.can().redo()}
-      features={{
-        link: false,
-        image: false,
-        // alignment: false,
-      }}
+      features={{ image: false }}
     >
       {/* The memoized editor content is passed here as a child */}
       {editorContent}

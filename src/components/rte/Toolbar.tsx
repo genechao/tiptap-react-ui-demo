@@ -11,8 +11,9 @@ interface ToolbarButtonProps {
   disabled?: boolean;
 }
 
-export const ToolbarButton: React.FC<ToolbarButtonProps> = ({ icon: Icon, isActive, onClick, tooltip, disabled }) => (
+export const ToolbarButton = React.forwardRef<HTMLButtonElement, ToolbarButtonProps>(({ icon: Icon, isActive, onClick, tooltip, disabled }, ref) => (
   <button
+    ref={ref}
     onClick={onClick}
     disabled={disabled}
     className={`flex h-8 w-8 items-center justify-center rounded-md border border-transparent p-1 transition-colors hover:bg-[var(--color-rte-ui-muted)] disabled:opacity-50 disabled:cursor-not-allowed ${isActive ? 'bg-[var(--color-rte-ui-accent)] ring-1 ring-inset ring-[var(--color-rte-ui-ring)]' : ''}`}
@@ -20,7 +21,7 @@ export const ToolbarButton: React.FC<ToolbarButtonProps> = ({ icon: Icon, isActi
   >
     <Icon className="h-4 w-4" />
   </button>
-);
+));
 
 interface ToolbarDropdownOption {
   id: string;
