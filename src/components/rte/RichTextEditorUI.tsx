@@ -84,7 +84,8 @@ export const RichTextEditorUI: React.FC<RichTextEditorUIProps> = ({
   features,
 }) => {
   const [linkInput, setLinkInput] = useState<string>('');
-  const fileInputRef = useRef<HTMLInputElement>(null); // Ref for the hidden file input
+  const linkSetButtonRef = useRef<HTMLButtonElement>(null); // Ref for the Set button
+  const imageInputRef = useRef<HTMLInputElement>(null); // Ref for the hidden file input
 
   // This useEffect synchronizes the internal `linkInput` state with the `currentLink` prop.
   // It's crucial for ensuring that when the popover opens, the input field correctly
@@ -106,8 +107,8 @@ export const RichTextEditorUI: React.FC<RichTextEditorUIProps> = ({
         if (!success) {
           console.error("Failed to add image to editor.");
         }
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+        if (imageInputRef.current) {
+          imageInputRef.current.value = '';
         }
       };
       reader.readAsDataURL(file); // Read the file as a Base64 Data URL
@@ -246,10 +247,17 @@ export const RichTextEditorUI: React.FC<RichTextEditorUIProps> = ({
                       placeholder="Enter URL"
                       value={linkInput}
                       onChange={(e) => setLinkInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        // Trigger the Set button click when Enter is pressed in the URL input
+                        if (e.key === 'Enter') {
+                          linkSetButtonRef.current?.click();
+                        }
+                      }}
                       className="h-9 w-32 sm:w-96 md:w-128 lg:w-160 rounded-md border border-[var(--color-rte-ui-input)] bg-[var(--color-rte-ui-background)] px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--color-rte-ui-muted-foreground)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-rte-ui-ring)] disabled:cursor-not-allowed disabled:opacity-50"
                     />
                     <PopoverClose asChild>
                       <button
+                        ref={linkSetButtonRef}
                         onClick={(e) => {
                           const success = onSetLink(linkInput);
                           if (!success) {
@@ -278,7 +286,7 @@ export const RichTextEditorUI: React.FC<RichTextEditorUIProps> = ({
             {mergedFeatures.image && (
               <ToolbarButton
                 icon={Image}
-                onClick={() => fileInputRef.current?.click()} // Trigger click on hidden input
+                onClick={() => imageInputRef.current?.click()} // Trigger click on hidden input
                 tooltip="Image"
               />
             )}
@@ -322,7 +330,7 @@ export const RichTextEditorUI: React.FC<RichTextEditorUIProps> = ({
         type="file"
         accept="image/*" // Accept only image files
         onChange={handleImageUpload}
-        ref={fileInputRef}
+        ref={imageInputRef}
         style={{ display: 'none' }} // Hide the input visually
       />
       <div className="p-4 prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl dark:prose-invert max-w-none prose-p:my-1 prose-headings:my-2 h-[300px]">
