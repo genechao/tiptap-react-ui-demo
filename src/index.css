@@ -53,7 +53,9 @@ body {
    <p style="text-align: center;">
      <img src="data:image/jpeg;base64,(...)" style="text-align: center;">
    </p>
-   IMPORTANT: Text not inline - I don't know how to apply CSS to do this. */
+ */
+/* Previous styles (text not inline):
+
 .ProseMirror p[style*="text-align: center"] {
   display: flex;
   justify-content: center;
@@ -67,6 +69,42 @@ body {
 .ProseMirror p[style*="text-align: left"] {
   display: flex;
   justify-content: flex-start;
+}
+ */
+
+.tiptap p img,
+.tiptap p[style*="text-align: left"] img {
+  float: left;
+  margin: 0rem 1rem 0rem 0rem; /* Add space between image and text */
+}
+
+.tiptap p[style*="text-align: right"] img {
+  float: right;
+  margin: 0rem 0rem 0rem 1rem; /* Add space between image and text */
+}
+
+.tiptap p[style*="text-align: center"] img {
+  float: none;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Match paragraph margin-top/bottom of the prose container */
+.prose .tiptap p[style*="text-align: center"] img {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+.prose-sm .tiptap p[style*="text-align: center"] img {
+  margin-top: 1.1428571em;
+  margin-bottom: 1.1428571em;
+}
+.prose-lg .tiptap p[style*="text-align: center"] img {
+  margin-top: 1.3333333em;
+  margin-bottom: 1.3333333em;
 }
 
 /* Align images directly
