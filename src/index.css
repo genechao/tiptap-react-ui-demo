@@ -43,3 +43,49 @@ body {
 /* .ProseMirror a:hover {
   color: theme('colors.blue.600');
 } */
+
+.ProseMirror .ProseMirror-selectednode {
+  outline: 2px solid #68cef8;
+}
+
+/* Align images using flexbox on the parent paragraph
+   for @tiptap/extension-image with inline: true
+   <p style="text-align: center;">
+     <img src="data:image/jpeg;base64,(...)" style="text-align: center;">
+   </p>
+   IMPORTANT: Text not inline - I don't know how to apply CSS to do this. */
+.ProseMirror p[style*="text-align: center"] {
+  display: flex;
+  justify-content: center;
+}
+
+.ProseMirror p[style*="text-align: right"] {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ProseMirror p[style*="text-align: left"] {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Align images directly
+   for @tiptap/extension-image with inline: false
+   <img src="data:image/jpeg;base64,(...)" style="text-align: center;"> */
+.ProseMirror img[style*="text-align: center"] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ProseMirror img[style*="text-align: right"] {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.ProseMirror img[style*="text-align: left"] {
+  display: block;
+  margin-left: 0;
+  margin-right: auto;
+}

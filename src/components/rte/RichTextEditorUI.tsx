@@ -1,4 +1,4 @@
-import React, { type ReactNode, useState, useEffect } from 'react';
+import React, { type ReactNode, useState, useEffect, useRef } from 'react';
 import { Toolbar, ToolbarButton, ToolbarGroup, ToolbarDropdownButton } from './Toolbar';
 import { Bold, Italic, Pilcrow, List, ListOrdered, Quote, Code, Undo, Redo, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, AlignLeft, AlignCenter, AlignRight, AlignJustify, Link, Image, Underline, Strikethrough } from 'lucide-react';
 import { Popover, PopoverTrigger, PopoverContent, PopoverClose } from '../ui/popover';
@@ -40,7 +40,7 @@ interface RichTextEditorUIProps {
   onSetLink: (url: string | null) => boolean;
   isLinkActive: boolean;
   currentLink: string | null;
-  onAddImage: () => void;
+  onAddImage: (src: string) => boolean;
   isCodeBlockActive: boolean;
   onSetHeading: (level: 1 | 2 | 3 | 4 | 5 | 6) => void;
   onSetParagraph: () => void;
@@ -84,6 +84,7 @@ export const RichTextEditorUI: React.FC<RichTextEditorUIProps> = ({
   features,
 }) => {
   const [linkInput, setLinkInput] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null); // Ref for the hidden file input
 
   // This useEffect synchronizes the internal `linkInput` state with the `currentLink` prop.
   // It's crucial for ensuring that when the popover opens, the input field correctly
@@ -94,6 +95,26 @@ export const RichTextEditorUI: React.FC<RichTextEditorUIProps> = ({
   useEffect(() => {
     setLinkInput(currentLink || '');
   }, [currentLink]);
+
+  // Handler for the hidden file input change event
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>): boolean => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const success = onAddImage(reader.result as string); // Pass Base64 string to parent handler
+        if (!success) {
+          console.error("Failed to add image to editor.");
+        }
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      };
+      reader.readAsDataURL(file); // Read the file as a Base64 Data URL
+      return true; // Indicate that file reading has started
+    }
+    return false; // Indicate no file was selected or processed
+  };
 
   const defaultFeatures: RichTextEditorUIFeatures = {
     bold: true,
@@ -257,7 +278,7 @@ export const RichTextEditorUI: React.FC<RichTextEditorUIProps> = ({
             {mergedFeatures.image && (
               <ToolbarButton
                 icon={Image}
-                onClick={onAddImage}
+                onClick={() => fileInputRef.current?.click()} // Trigger click on hidden input
                 tooltip="Image"
               />
             )}
@@ -272,7 +293,7 @@ export const RichTextEditorUI: React.FC<RichTextEditorUIProps> = ({
                 { id: 'left', name: 'Align Left', icon: AlignLeft, onClick: () => onSetAlign('left') },
                 { id: 'center', name: 'Align Center', icon: AlignCenter, onClick: () => onSetAlign('center') },
                 { id: 'right', name: 'Align Right', icon: AlignRight, onClick: () => onSetAlign('right') },
-                { id: 'justify', name: 'Justify', icon: AlignJustify, onClick: () => onSetAlign('justify') },
+                { id: 'justify', name: 'Align Justify', icon: AlignJustify, onClick: () => onSetAlign('justify') },
               ]}
               tooltip="Align"
             />
@@ -296,6 +317,14 @@ export const RichTextEditorUI: React.FC<RichTextEditorUIProps> = ({
           </ToolbarGroup>
         )}
       </Toolbar>
+      {/* Hidden file input for image upload */}
+      <input
+        type="file"
+        accept="image/*" // Accept only image files
+        onChange={handleImageUpload}
+        ref={fileInputRef}
+        style={{ display: 'none' }} // Hide the input visually
+      />
       <div className="p-4 prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl dark:prose-invert max-w-none prose-p:my-1 prose-headings:my-2 h-[300px]">
         {children}
       </div>

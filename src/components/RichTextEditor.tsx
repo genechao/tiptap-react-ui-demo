@@ -1,6 +1,7 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import TextAlign from '@tiptap/extension-text-align';
+import Image from '@tiptap/extension-image';
 import { RichTextEditorUI } from './rte/RichTextEditorUI';
 import React, { useEffect, useReducer, useMemo } from 'react';
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback';
@@ -32,7 +33,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value: htmlContent, onC
           },
         },
       }),
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TextAlign.configure({ types: ['heading', 'paragraph', 'image'] }),
+      Image.configure({
+        // inline: true, // Allows images to be inline with text
+        inline: false, // Allows images to be block-level
+        allowBase64: true, // IMPORTANT: Allows embedding Base64 images
+      }),
     ],
     content: htmlContent, // Use HTML directly
     onUpdate: ({ editor }) => {
@@ -114,7 +120,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value: htmlContent, onC
       onSetLink={handleSetLink}
       isLinkActive={editor.isActive('link')}
       currentLink={editor.getAttributes('link').href || null}
-      onAddImage={() => alert("not yet implemented")}
+      onAddImage={(src: string) => editor.chain().focus().setImage({ src }).run()}
       isCodeBlockActive={editor.isActive('codeBlock')}
       onSetHeading={(level) => editor.chain().focus().toggleHeading({ level }).run()}
       onSetParagraph={() => editor.chain().focus().setParagraph().run()}
@@ -123,7 +129,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value: htmlContent, onC
       onRedo={() => editor.chain().focus().redo().run()}
       canUndo={editor.can().undo()}
       canRedo={editor.can().redo()}
-      features={{ image: false }}
     >
       {/* The memoized editor content is passed here as a child */}
       {editorContent}
